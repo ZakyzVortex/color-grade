@@ -18,8 +18,12 @@ jobs:
 
       - name: Install Android SDK packages
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-28" "ndk;28.2.13676358"
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          SDKM="$(ls -d "$SDK"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -1)"
+          echo "Using $SDKM"
+          yes | "$SDKM" --sdk_root="$SDK" --licenses > /dev/null || true
+          "$SDKM" --sdk_root="$SDK" "platforms;android-28" "ndk;28.2.13676358"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
           sudo apt-get update
           sudo apt-get install -y ninja-build
 
